@@ -4,5 +4,14 @@
 
 {% block content %}
     <h2>Add Task</h2>
-    <!-- Form for task adding html here -->
+    <form method="post" action="{{ url_for('add_task') }}">
+        {{ form.csrf_token }}
+        <label for="title">Title:</label>
+        {{ form.title }}
+        <br>
+        <label for="description">Description:</label>
+        {{ form.description }}
+        <br>
+        <input type="submit" value="Add Task">
+    </form>
 {% endblock %}

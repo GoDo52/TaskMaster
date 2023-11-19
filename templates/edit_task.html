@@ -4,5 +4,14 @@
 
 {% block content %}
     <h2>Edit Task</h2>
-    <!-- Form for task editing html here -->
+    <form method="post" action="{{ url_for('edit_task', task_id=task.id) }}">
+        {{ form.csrf_token }}
+        <label for="title">Title:</label>
+        {{ form.title }}
+        <br>
+        <label for="description">Description:</label>
+        {{ form.description }}
+        <br>
+        <input type="submit" value="Save Changes">
+    </form>
 {% endblock %}

@@ -6,7 +6,10 @@
     <h2>Task List</h2>
     <ul>
         {% for task in tasks %}
-            <li>{{ task['title'] }} - {{ task['description'] }}</li>
+            <li>
+                {{ task.title }} - {{ task.description }}
+                [<a href="{{ url_for('edit_task', task_id=task.id) }}">Edit</a>]
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}
