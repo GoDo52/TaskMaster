@@ -15,6 +15,12 @@
                 <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="{{ url_for('task_list') }}">Task List</a></li>
                 <li><a href="{{ url_for('add_task') }}">Add New Task</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('register') }}">Register</a></li>
+                {% endif %}
                 <!-- Think on more navigation links here -->
             </ul>
         </nav>
@@ -23,7 +29,7 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2023 Task Manager</p>
+        <p>&copy; 2023 Task Manager of Oleksandr Nazariants :)</p>
     </footer>
 </body>
 </html>
