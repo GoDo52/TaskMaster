@@ -16,11 +16,11 @@ def create_app():
     app.config['SECRET_KEY'] = secrets.token_hex(16)
 
     # there goes your credentials for AWS RDS
-    admin = "admin"
-    password = "adminadmin"
-    host = "taskmanager.cywfs8sp5cgm.eu-north-1.rds.amazonaws.com"
-    port = "3306"
-    database = "taskmanagerdb"
+    admin = ""
+    password = ""
+    host = ""
+    port = ""
+    database = ""
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{admin}:{password}@{host}:{port}/{database}'
     db.init_app(app)
     with app.app_context():
@@ -47,6 +47,10 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class DuplicateUserError(Exception):
+    pass
+
+
 # ======================================================================================================================
 
 
@@ -61,11 +65,16 @@ def register():
         username = request.form['username']
         password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
 
-        new_user = User(username=username, password=password)
-        db.session.add(new_user)
-        db.session.commit()
+        existing_user = User.query.filter_by(username=username).first()
 
-        return redirect(url_for('login'))
+        if existing_user:
+            flash('Username already exists. Please choose a different username.', 'error')
+        else:
+            new_user = User(username=username, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('login'))
 
     return render_template('register.html')
 
@@ -142,6 +151,29 @@ def delete_task(task_id):
         return redirect(url_for('task_list'))
     else:
         return render_template('task_not_found.html')
+
+
+# ======================================================================================================================
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
+@app.errorhandler(403)
+def access_denied(e):
+    return render_template('403.html'), 403
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return render_template('405.html'), 405
+
+@app.errorhandler(400)
+def bad_request(e):
+    return render_template('400.html'), 400
 
 
 # ======================================================================================================================
