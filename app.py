@@ -1,4 +1,5 @@
 import secrets
+import boto3
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_bcrypt import Bcrypt
@@ -16,11 +17,13 @@ def create_app():
     app.config['SECRET_KEY'] = secrets.token_hex(16)
 
     # there goes your credentials for AWS RDS
-    admin = ""
-    password = ""
-    host = ""
-    port = ""
-    database = ""
+    ssm = boto3.client('ssm', region_name='Europe')
+
+    admin = ssm.get_parameter(Name='/TaskManager/db_username', WithDecryption=True)['Parameter']['Value']
+    password = ssm.get_parameter(Name='/TaskManager/db_password', WithDecryption=True)['Parameter']['Value']
+    host = ssm.get_parameter(Name='/TaskManager/db_host')['Parameter']['Value']
+    port = ssm.get_parameter(Name='/TaskManager/db_port')['Parameter']['Value']
+    database = ssm.get_parameter(Name='/TaskManager/db_name')['Parameter']['Value']
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{admin}:{password}@{host}:{port}/{database}'
     db.init_app(app)
     with app.app_context():
