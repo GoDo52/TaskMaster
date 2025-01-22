@@ -108,7 +108,7 @@ def logout():
 @app.route('/tasks')
 @login_required
 def task_list():
-    tasks = Task.query.all()
+    tasks = current_user.tasks
     return render_template('task_list.html', tasks=tasks)
 
 
